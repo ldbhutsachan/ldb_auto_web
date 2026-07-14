@@ -1,10 +1,9 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import router from '@/router'
-import vuetify from '@/plugins/vuetify'
+import ui from '@nuxt/ui/vue-plugin'
 import App from './App.vue'
-import './styles/main.css'
-import '@mdi/font/css/materialdesignicons.css'
+import './assets/css/main.css'
 
 const app = createApp(App)
 
@@ -12,8 +11,8 @@ const app = createApp(App)
 const pinia = createPinia()
 app.use(pinia)
 
-// Initialize Vuetify (UI framework)
-app.use(vuetify)
+// Initialize Nuxt UI (component library + toast/tooltip/overlay providers)
+app.use(ui)
 
 // Initialize Router
 app.use(router)

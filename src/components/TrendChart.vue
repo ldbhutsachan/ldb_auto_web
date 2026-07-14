@@ -384,6 +384,10 @@ function onMouseLeave() {
   stroke-width: 1;
 }
 
+.dark .grid-line {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
 .axis-label {
   font-size: 11px;
   font-weight: 500;
@@ -433,13 +437,17 @@ function onMouseLeave() {
   pointer-events: none;
 }
 
+.dark .hover-line {
+  stroke: rgba(255, 255, 255, 0.16);
+}
+
 .trend-tooltip {
   position: absolute;
-  background: white;
+  background: var(--ui-bg, white);
   border-radius: 10px;
   padding: 12px 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ui-border, #e2e8f0);
   pointer-events: none;
   z-index: 100;
   min-width: 150px;
@@ -454,10 +462,10 @@ function onMouseLeave() {
 .tooltip-header {
   font-size: 13px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--ui-text-highlighted, #1e293b);
   margin-bottom: 8px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--ui-border, #f1f5f9);
 }
 
 .tooltip-row {
@@ -477,13 +485,13 @@ function onMouseLeave() {
 
 .tooltip-name {
   font-weight: 500;
-  color: #64748b;
+  color: var(--ui-text-muted, #64748b);
   flex: 1;
 }
 
 .tooltip-value {
   font-weight: 700;
-  color: #1e293b;
+  color: var(--ui-text-highlighted, #1e293b);
   font-family: 'Inter', sans-serif;
 }
 </style>

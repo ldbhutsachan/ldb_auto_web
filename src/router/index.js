@@ -15,13 +15,11 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/home',
+        redirect: '/dashboard',
       },
       {
         path: 'home',
-        name: 'Home',
-        component: () => import('@/views/HomePage.vue'),
-        meta: { title: 'nav.home' },
+        redirect: '/dashboard',
       },
       {
         path: 'dashboard',
@@ -32,13 +30,15 @@ const routes = [
       {
         path: 'register',
         name: 'Register',
-        component: () => import('@/views/RegisterPage.vue'),
+        component: () => import('@/views/ComingSoonPage.vue'),
+        props: { titleKey: 'nav.register', icon: 'i-lucide-user-plus' },
         meta: { title: 'nav.register' },
       },
       {
         path: 'auth',
         name: 'Auth',
-        component: () => import('@/views/AuthPage.vue'),
+        component: () => import('@/views/ComingSoonPage.vue'),
+        props: { titleKey: 'nav.auth', icon: 'i-lucide-lock' },
         meta: { title: 'nav.auth' },
       },
       {
@@ -69,6 +69,7 @@ const routes = [
         path: 'transaction',
         name: 'Transactions',
         component: () => import('@/views/TransactionPage.vue'),
+        props: { mode: 'transaction' },
         meta: { title: 'nav.transactions' },
       },
       {
@@ -80,7 +81,8 @@ const routes = [
       {
         path: 'reportTxn',
         name: 'ReportTxn',
-        component: () => import('@/views/ReportTxnPage.vue'),
+        component: () => import('@/views/TransactionPage.vue'),
+        props: { mode: 'reportTxn' },
         meta: { title: 'reportTxn.title' },
       },
       {
@@ -93,7 +95,7 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/home',
+    redirect: '/dashboard',
   },
 ]
 

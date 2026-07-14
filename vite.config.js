@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vuetify from 'vite-plugin-vuetify'
+import ui from '@nuxt/ui/vite'
 import { resolve } from 'path'
 
 export default defineConfig(({ mode }) => {
@@ -16,7 +16,14 @@ export default defineConfig(({ mode }) => {
     base: '/',
     plugins: [
       vue(),
-      vuetify({ autoImport: true }),
+      ui({
+        ui: {
+          colors: {
+            primary: 'blue',
+            neutral: 'zinc',
+          },
+        },
+      }),
     ],
     resolve: {
       alias: {
@@ -46,9 +53,6 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-    },
-    optimizeDeps: {
-      include: ['axios', 'vuetify'],
     },
   }
 })
