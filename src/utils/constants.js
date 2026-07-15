@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
   ACCOUNT_UPDATE: '/auto/dev/api/v1/account',
   ACCOUNT_DELETE: '/auto/dev/api/v1/account',
   ACCOUNT_FILTER: '/auto/dev/api/v1/account',
+  ACCOUNT_BALANCE_MONITOR: '/auto/dev/api/v1/dash/dashboard2',
   // Account Mapper
   MAPPER_LIST: '/auto/dev/api/v1/account-map/accountMaper',
   MAPPER_CREATE: '/auto/dev/api/v1/account-map/mapper',

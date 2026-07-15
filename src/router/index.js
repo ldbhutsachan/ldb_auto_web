@@ -69,7 +69,6 @@ const routes = [
         path: 'transaction',
         name: 'Transactions',
         component: () => import('@/views/TransactionPage.vue'),
-        props: { mode: 'transaction' },
         meta: { title: 'nav.transactions' },
       },
       {
@@ -82,7 +81,6 @@ const routes = [
         path: 'reportTxn',
         name: 'ReportTxn',
         component: () => import('@/views/TransactionPage.vue'),
-        props: { mode: 'reportTxn' },
         meta: { title: 'reportTxn.title' },
       },
       {
@@ -90,6 +88,12 @@ const routes = [
         name: 'BranchReport',
         component: () => import('@/views/BranchReportPage.vue'),
         meta: { title: 'report.branchReport' },
+      },
+      {
+        path: 'monitor',
+        name: 'Monitor',
+        component: () => import('@/views/MonitorPage.vue'),
+        meta: { title: 'monitor.title' },
       },
     ],
   },

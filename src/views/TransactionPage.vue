@@ -113,10 +113,6 @@ import { exportToExcel, exportPettyForm } from '@/utils/export'
 import UButton from '@nuxt/ui/components/Button.vue'
 import Field from '@/components/DetailField.vue'
 
-const props = defineProps({
-  mode: { type: String, default: 'transaction' }, // 'transaction' | 'reportTxn' — differ only in column order/set
-})
-
 const store = useTransactionStore()
 
 const pageSize = 10
@@ -257,7 +253,7 @@ function viewActionCell({ row }) {
   ])
 }
 
-const transactionColumns = [
+const columns = [
   { accessorKey: 'keyId', header: t('transaction.keyId'), cell: ({ row }) => `#${row.original.keyId}` },
   { accessorKey: 'branchName', header: t('transaction.branchName'), cell: ({ row }) => row.original.branchName || '—' },
   { accessorKey: 'txnDate', header: t('transaction.date'), cell: ({ row }) => formatDateDisplay(row.original.txnDate) },
@@ -275,22 +271,4 @@ const transactionColumns = [
   { id: 'actions', header: '', cell: viewActionCell },
 ]
 
-const reportTxnColumns = [
-  { accessorKey: 'keyId', header: t('transaction.keyId'), cell: ({ row }) => `#${row.original.keyId}` },
-  { accessorKey: 'fromAcctNo', header: t('transaction.fromAcctNo'), cell: ({ row }) => row.original.fromAcctNo || '—' },
-  { accessorKey: 'toAcctNo', header: t('transaction.toAcctNo'), cell: ({ row }) => row.original.toAcctNo || '—' },
-  { accessorKey: 'remark', header: t('transaction.description'), cell: ({ row }) => row.original.remark || '—' },
-  { accessorKey: 'fromAcctAmount', header: t('transaction.fromAcctAmount'), cell: ({ row }) => h('div', { class: 'text-right' }, formatAmount(row.original.fromAcctAmount)) },
-  { accessorKey: 'balanceAmount', header: t('transaction.balanceAmount'), cell: ({ row }) => h('div', { class: 'text-right' }, formatAmount(row.original.balanceAmount)) },
-  { accessorKey: 'percent', header: t('transaction.percent'), cell: ({ row }) => h('div', { class: 'text-right' }, `${row.original.percent ?? 0}%`) },
-  { accessorKey: 'toAcctAmount', header: t('transaction.amount'), cell: ({ row }) => h('div', { class: 'text-right text-error' }, formatAmount(row.original.toAcctAmount)) },
-  { accessorKey: 'fromAcctCcy', header: t('transaction.currency'), cell: ccyCell('fromAcctCcy') },
-  { accessorKey: 'txnDate', header: t('transaction.date'), cell: ({ row }) => formatDateDisplay(row.original.txnDate) },
-  { accessorKey: 'txnType', header: t('transaction.type'), cell: ({ row }) => h('span', { class: 'inline-flex px-2.5 py-1 rounded-md bg-elevated text-xs font-mono' }, row.original.txnType || '—') },
-  { accessorKey: 'branchName', header: t('transaction.branchName'), cell: ({ row }) => row.original.branchName || '—' },
-  { accessorKey: 'status', header: t('transaction.status'), cell: statusCell },
-  { id: 'actions', header: '', cell: viewActionCell },
-]
-
-const columns = computed(() => (props.mode === 'reportTxn' ? reportTxnColumns : transactionColumns))
 </script>

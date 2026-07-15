@@ -27,6 +27,19 @@
       </div>
     </div>
 
+    <!-- Month/Year filter -->
+    <UCard>
+      <div class="flex flex-wrap items-end gap-3">
+        <UFormField :label="t('monthlyReport.month')">
+          <USelect v-model="filterMonth" :items="monthItems" class="w-40" />
+        </UFormField>
+        <UFormField :label="t('monthlyReport.year')">
+          <USelect v-model="filterYear" :items="yearItems" class="w-32" />
+        </UFormField>
+        <UButton icon="i-lucide-search" :loading="loading" @click="applyFilter">{{ t('common.search') }}</UButton>
+      </div>
+    </UCard>
+
     <!-- Closing Balance -->
     <SectionHeader icon="i-lucide-book-open-check" :title="t('dashboard.closingTotalBalance')" :subtitle="t('dashboard.closingSubtitle')" />
     <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
@@ -164,7 +177,29 @@ const {
   currencyTotals,
   loading,
   error,
+  filterMonth,
+  filterYear,
 } = storeToRefs(dashboardStore)
+
+const monthItems = computed(() => [
+  { label: t('monthlyReport.all'), value: 'all' },
+  ...Array.from({ length: 12 }, (_, i) => {
+    const value = String(i + 1).padStart(2, '0')
+    return { label: t('monthlyReport.months')[String(i + 1)] || value, value }
+  }),
+])
+
+const yearItems = computed(() => [
+  { label: t('monthlyReport.all'), value: 'all' },
+  ...Array.from({ length: 2040 - 2024 + 1 }, (_, i) => {
+    const year = String(2024 + i)
+    return { label: year, value: year }
+  }),
+])
+
+function applyFilter() {
+  dashboardStore.loadDashboard({ month: filterMonth.value, year: filterYear.value })
+}
 
 const pageSize = 10
 const branchPage = ref(1)

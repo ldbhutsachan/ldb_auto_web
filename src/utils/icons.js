@@ -13,6 +13,7 @@ const iconMap = {
   'mdi-domain': 'i-lucide-building-2',
   'mdi-bank': 'i-lucide-landmark',
   'mdi-swap-horizontal': 'i-lucide-arrow-left-right',
+  'mdi-chart-line': 'i-lucide-activity',
 }
 
 const FALLBACK_ICON = 'i-lucide-circle'

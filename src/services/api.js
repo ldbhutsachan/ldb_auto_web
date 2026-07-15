@@ -49,9 +49,11 @@ export async function login(username, password) {
  * Fetch dashboard data
  * Backend returns ApiResponse { status, message, data: DashboardDto }
  * Returns DashboardDto fields merged with any extra chart/report data.
+ * @param {{month?: string, year?: string}} filters - month "01".."12" or "all", year "2024".."2040" or "all"
  */
-export async function fetchDashboard() {
-  const response = await apiRequest(API_ENDPOINTS.DASHBOARD_SUMMARY, {
+export async function fetchDashboard({ month = 'all', year = 'all' } = {}) {
+  const params = new URLSearchParams({ month, year })
+  const response = await apiRequest(`${API_ENDPOINTS.DASHBOARD_SUMMARY}?${params.toString()}`, {
     method: 'GET',
   })
   if (response && response.respCode === '00' && response.respData) {
@@ -327,4 +329,18 @@ export async function fetchBranchReport(request) {
     method: 'POST',
     body: JSON.stringify(request),
   })
+}
+
+/**
+ * Fetch real-time account balance monitor data (accounts, currency totals,
+ * per-branch summary, per-category summary, grand total), optionally filtered
+ * by branch code / account number.
+ * GET /dash/dashboard2?branchCode=&accountNo=
+ */
+export async function fetchAccountBalanceMonitor({ branchCode, accountNo } = {}) {
+  const params = new URLSearchParams()
+  if (branchCode) params.append('branchCode', branchCode)
+  if (accountNo) params.append('accountNo', accountNo)
+  const qs = params.toString()
+  return apiRequest(`${API_ENDPOINTS.ACCOUNT_BALANCE_MONITOR}${qs ? `?${qs}` : ''}`)
 }

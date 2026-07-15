@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center p-5 bg-elevated">
-    <div class="flex w-full max-w-4xl min-h-[540px] rounded-2xl overflow-hidden border border-default shadow-lg">
+  <div class="min-h-screen flex flex-col items-center justify-center gap-5 p-5 bg-elevated">
+    <div class="flex flex-col md:flex-row w-full max-w-4xl md:min-h-[540px] rounded-2xl overflow-hidden border border-default shadow-lg">
       <!-- Brand Side -->
       <div
-        class="hidden md:flex flex-1 items-center p-12 bg-cover bg-center"
+        class="flex md:flex-1 items-center p-8 md:p-12 bg-cover bg-center"
         :style="{ backgroundImage: `linear-gradient(rgba(30,58,95,.85), rgba(30,58,95,.85)), url(${bgUrl})` }"
       >
         <div class="w-full">
-          <div class="flex items-center justify-center size-16 rounded-2xl bg-white/8 border border-white/10 mb-7">
-            <img :src="logoUrl" alt="Logo" class="size-9 object-contain" />
+          <div class="flex items-center justify-center size-13 md:size-16 rounded-2xl bg-white/8 border border-white/10 mb-5 md:mb-7">
+            <img :src="logoUrl" alt="Logo" class="size-8 md:size-9 object-contain" />
           </div>
           <h1 class="text-2xl font-bold text-white mb-2.5 leading-tight">{{ t('auth.welcomeBack') }}</h1>
           <p class="text-sm text-white/55 mb-9 leading-relaxed">{{ t('auth.loginSubtitle') }}</p>
@@ -24,9 +24,6 @@
       <!-- Login Card -->
       <div class="w-full md:w-[400px] bg-default flex flex-col justify-center p-9 md:p-12">
         <div class="text-center mb-8">
-          <div class="md:hidden flex items-center justify-center size-13 rounded-2xl bg-elevated mb-5 mx-auto">
-            <img :src="logoUrl" alt="Logo" class="size-8 object-contain" />
-          </div>
           <h2 class="text-xl font-bold mb-1.5">{{ t('auth.login') }}</h2>
           <p class="text-sm text-muted">{{ t('auth.loginSubtitle') }}</p>
         </div>
@@ -98,6 +95,22 @@
         </div>
       </div>
     </div>
+
+    <!-- Developed-for footer -->
+    <div class="flex flex-col items-center gap-2.5">
+      <p class="text-[11px] font-medium tracking-wide text-muted uppercase">{{ t('auth.developedFor') }}</p>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+          <img :src="logoUrl" alt="ທະນາຄານພັດທະນາລາວ" class="size-6 object-contain" />
+          <span class="text-xs font-semibold text-toned">ທະນາຄານພັດທະນາລາວ</span>
+        </div>
+        <span class="text-muted/40 text-sm select-none">×</span>
+        <div class="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+          <img :src="edlLogoUrl" alt="ບໍລິສັດ ໄຟຟ້າລາວ ຈຳກັດ" class="size-6 object-contain" />
+          <span class="text-xs font-semibold text-toned">ບໍລິສັດ ໄຟຟ້າລາວ ຈຳກັດ</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -107,6 +120,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { t, getLanguage, setLanguage } from '@/i18n'
 import logoUrl from '@/assets/icon-bg/logo.png'
+import edlLogoUrl from '@/assets/icon-bg/edl.png'
 import bgUrl from '@/assets/icon-bg/bg-ldb.jpg'
 
 const router = useRouter()

@@ -47,13 +47,20 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const loading = ref(false)
   const error = ref(null)
 
+  // Dashboard-wide month/year filter — 'all' means "show everything"
+  const filterMonth = ref('all')
+  const filterYear = ref('all')
+
   const hasData = computed(() => totalTransactions.value > 0)
 
-  async function loadDashboard() {
+  async function loadDashboard(filters = {}) {
+    if (filters.month !== undefined) filterMonth.value = filters.month
+    if (filters.year !== undefined) filterYear.value = filters.year
+
     loading.value = true
     error.value = null
     try {
-      const data = await fetchDashboard()
+      const data = await fetchDashboard({ month: filterMonth.value, year: filterYear.value })
 
       // Map DashboardDto fields
       totalRegistrations.value = data.totalRegistrations ?? 0
@@ -153,6 +160,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
     loading,
     error,
     hasData,
+    filterMonth,
+    filterYear,
     loadDashboard,
   }
 })

@@ -13,6 +13,7 @@ const FALLBACK_MENU = [
   { path: '/mapAccount', label: 'ຈັບຄູ່ບັນຊີ', icon: 'mdi-swap-horizontal' },
   { path: '/register', label: 'ລົງທະບຽນ Auto Debit', icon: 'mdi-account-plus' },
   { path: '/transaction', label: 'Transaction', icon: 'mdi-lock' },
+  { path: '/monitor', label: 'ຕິດຕາມບັນຊີແບບ RealTime', icon: 'mdi-chart-line' },
   { path: '/auth', label: 'ອານຸມັດລາຍການ', icon: 'mdi-lock' },
   {
     path: '/report',
