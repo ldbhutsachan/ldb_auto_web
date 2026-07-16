@@ -46,6 +46,7 @@
           :ui="{
             link: 'group relative rounded-xl transition-all duration-200 ease-out shadow-[0_1px_0_0_rgba(255,255,255,0.6)_inset,0_1px_3px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 hover:shadow-[0_1px_0_0_rgba(255,255,255,0.7)_inset,0_8px_16px_rgba(0,0,0,0.14)] active:translate-y-0 active:duration-75 active:shadow-[0_2px_5px_rgba(0,0,0,0.16)_inset] data-[active]:shadow-[0_2px_6px_rgba(0,0,0,0.12)_inset] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.06)_inset,0_1px_3px_rgba(0,0,0,0.4)] dark:hover:shadow-[0_1px_0_0_rgba(255,255,255,0.08)_inset,0_8px_16px_rgba(0,0,0,0.55)] dark:active:shadow-[0_2px_5px_rgba(0,0,0,0.5)_inset] dark:data-[active]:shadow-[0_2px_6px_rgba(0,0,0,0.5)_inset]',
             linkLeadingIcon: 'transition-transform duration-200 ease-out group-hover:scale-110',
+            content: 'data-[state=open]:animate-[nav-submenu-down_260ms_cubic-bezier(0.16,1,0.3,1)] data-[state=closed]:animate-[nav-submenu-up_200ms_ease-in]',
           }"
         />
       </template>

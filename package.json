@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@nuxt/ui": "^4.9.0",
+    "@nuxt/ui": "^4.10.0",
     "@vueuse/core": "^14.3.0",
     "exceljs": "^4.4.0",
     "pinia": "^3.0.4",

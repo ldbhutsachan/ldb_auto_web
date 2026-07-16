@@ -23,6 +23,14 @@
             :placeholder="field.placeholder"
             class="w-full"
           />
+          <USelectMenu
+            v-else-if="field.type === 'combobox'"
+            v-model="state[field.name]"
+            :items="field.options || []"
+            value-key="value"
+            :placeholder="field.placeholder"
+            class="w-full"
+          />
           <UTextarea
             v-else-if="field.type === 'textarea'"
             v-model="state[field.name]"

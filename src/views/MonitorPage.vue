@@ -11,8 +11,9 @@
 
     <UCard>
       <div class="flex flex-wrap items-end gap-3">
-        <UFormField :label="t('monitor.searchByBranch')">
-          <USelect v-model="filters.branchCode" :items="branchItems" class="w-56" />
+        <UFormField :label="t('monitor.searchByBranch')" :error="branchLoadError">
+          <USelectMenu v-if="branchesReady" v-model="filters.branchCode" :items="branchItems" value-key="value" class="w-56" />
+          <USelect v-else disabled :items="[]" :placeholder="t('common.loading')" class="w-56" />
         </UFormField>
         <UFormField :label="t('monitor.searchByAccount')">
           <UInput v-model="filters.accountNo" :placeholder="t('monitor.placeholderAccount')" @keyup.enter="handleSearch" />
@@ -96,14 +97,17 @@ import StatCard from '@/components/StatCard.vue'
 
 const REFRESH_INTERVAL_MS = 30000
 const CATEGORY_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6']
+const ALL_BRANCHES = 'ALL'
 
 const store = useMonitorStore()
 const branchList = ref([])
+const branchLoadError = ref(null)
+const branchesReady = ref(false)
 
-const filters = reactive({ branchCode: '', accountNo: '' })
+const filters = reactive({ branchCode: ALL_BRANCHES, accountNo: '' })
 
 const branchItems = computed(() => [
-  { label: t('report.allBranches'), value: '' },
+  { label: t('report.allBranches'), value: ALL_BRANCHES },
   ...branchList.value.map((b) => ({ label: `${b.branchName} (${b.branchNo})`, value: String(b.branchNo) })),
 ])
 
@@ -175,7 +179,7 @@ const accountDetailColumns = [
 
 async function loadMonitor() {
   const request = {}
-  if (filters.branchCode) request.branchCode = filters.branchCode
+  if (filters.branchCode && filters.branchCode !== ALL_BRANCHES) request.branchCode = filters.branchCode
   if (filters.accountNo) request.accountNo = filters.accountNo
   await store.loadMonitor(request)
 }
@@ -185,7 +189,7 @@ function handleSearch() {
 }
 
 function handleClear() {
-  filters.branchCode = ''
+  filters.branchCode = ALL_BRANCHES
   filters.accountNo = ''
   store.clearMonitor()
   loadMonitor()
@@ -255,9 +259,17 @@ let refreshTimer = null
 async function loadBranches() {
   try {
     const result = await fetchBranches()
-    if (result.respCode === '00') branchList.value = result.respData || []
+    if (result.respCode === '00') {
+      branchList.value = result.respData || []
+      branchLoadError.value = null
+    } else {
+      branchLoadError.value = result.respDesc || 'Failed to load branch list'
+    }
   } catch (err) {
     console.error('Failed to load branch list:', err)
+    branchLoadError.value = err.message || 'Failed to load branch list'
+  } finally {
+    branchesReady.value = true
   }
 }
 

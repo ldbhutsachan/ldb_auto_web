@@ -48,6 +48,16 @@
   transform: translateY(-4px);
 }
 
+@keyframes nav-submenu-down {
+  0% { height: 0; opacity: 0; overflow: hidden; }
+  to { height: var(--reka-collapsible-content-height); opacity: 1; overflow: hidden; }
+}
+
+@keyframes nav-submenu-up {
+  0% { height: var(--reka-collapsible-content-height); opacity: 1; overflow: hidden; }
+  to { height: 0; opacity: 0; overflow: hidden; }
+}
+
 @keyframes logo-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-3px); }

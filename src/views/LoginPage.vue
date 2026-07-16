@@ -1,23 +1,35 @@
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center gap-5 p-5 bg-elevated">
-    <div class="flex flex-col md:flex-row w-full max-w-4xl md:min-h-[540px] rounded-2xl overflow-hidden border border-default shadow-lg">
+  <div
+    class="relative min-h-screen flex flex-col items-center justify-center gap-5 p-5 bg-cover bg-center"
+    :style="{ backgroundImage: `url(${bgUrl})` }"
+  >
+    <div class="absolute inset-0 bg-elevated/70 backdrop-blur-sm" />
+
+    <div class="relative flex flex-col md:flex-row w-full max-w-4xl md:min-h-[540px] rounded-2xl overflow-hidden border border-default shadow-2xl">
       <!-- Brand Side -->
       <div
         class="flex md:flex-1 items-center p-8 md:p-12 bg-cover bg-center"
         :style="{ backgroundImage: `linear-gradient(rgba(30,58,95,.85), rgba(30,58,95,.85)), url(${bgUrl})` }"
       >
         <div class="w-full">
-          <div class="flex items-center justify-center size-13 md:size-16 rounded-2xl bg-white/8 border border-white/10 mb-5 md:mb-7">
-            <img :src="logoUrl" alt="Logo" class="size-8 md:size-9 object-contain" />
+          <div class="flex items-center gap-4 mb-5 md:mb-7">
+            <div class="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-white/8 border border-white/10">
+              <img :src="logoUrl" alt="LDB" class="logo-float size-13 md:size-16 object-contain" />
+            </div>
+            <span class="text-white/30 text-xl select-none">×</span>
+            <div class="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-white/8 border border-white/10">
+              <img :src="edlLogoUrl" alt="EDL" class="logo-float-delay size-13 md:size-16 object-contain" />
+            </div>
           </div>
           <h1 class="text-2xl font-bold text-white mb-2.5 leading-tight">{{ t('auth.welcomeBack') }}</h1>
           <p class="text-sm text-white/55 mb-9 leading-relaxed">{{ t('auth.loginSubtitle') }}</p>
           <div class="flex flex-col gap-3.5">
             <div v-for="feature in features" :key="feature" class="flex items-center gap-3 text-white/75 text-sm font-medium">
               <UIcon name="i-lucide-check-circle" class="size-4.5 text-white/40 shrink-0" />
-              <span>{{ feature }}</span>
+              <span>{{ t(feature) }}</span>
             </div>
           </div>
+          <p class="text-xs text-white/40 mt-8">{{ t('auth.developedBy') }}</p>
         </div>
       </div>
 
@@ -95,22 +107,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Developed-for footer -->
-    <div class="flex flex-col items-center gap-2.5">
-      <p class="text-[11px] font-medium tracking-wide text-muted uppercase">{{ t('auth.developedFor') }}</p>
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
-          <img :src="logoUrl" alt="ທະນາຄານພັດທະນາລາວ" class="size-6 object-contain" />
-          <span class="text-xs font-semibold text-toned">ທະນາຄານພັດທະນາລາວ</span>
-        </div>
-        <span class="text-muted/40 text-sm select-none">×</span>
-        <div class="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
-          <img :src="edlLogoUrl" alt="ບໍລິສັດ ໄຟຟ້າລາວ ຈຳກັດ" class="size-6 object-contain" />
-          <span class="text-xs font-semibold text-toned">ບໍລິສັດ ໄຟຟ້າລາວ ຈຳກັດ</span>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -131,7 +127,7 @@ const password = ref('')
 const showPassword = ref(false)
 const isLang = ref(getLanguage())
 
-const features = ['Auto Debit Payment', 'Secure Transactions', 'Real-time Monitoring']
+const features = ['auth.featureAutoDebit', 'auth.featureSecureTransactions', 'auth.featureRealtimeMonitoring']
 
 onMounted(() => {
   if (authStore.isAuthenticated) {

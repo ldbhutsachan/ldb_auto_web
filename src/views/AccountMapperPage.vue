@@ -38,7 +38,7 @@ import { useMapperStore } from '@/stores/mapper'
 import { useAuthStore } from '@/stores/auth'
 import { t } from '@/i18n'
 import { CURRENCIES } from '@/utils/constants'
-import { fetchCompanies } from '@/services/api'
+import { fetchCompanies, fetchBranches } from '@/services/api'
 import { useToast } from '@nuxt/ui/composables'
 import UButton from '@nuxt/ui/components/Button.vue'
 import CrudTablePage from '@/components/crud/CrudTablePage.vue'
@@ -50,6 +50,7 @@ const authStore = useAuthStore()
 const toast = useToast()
 
 const companies = ref([])
+const branches = ref([])
 const showModal = ref(false)
 const isEditing = ref(false)
 const editingId = ref(null)
@@ -77,6 +78,7 @@ const form = ref(blankForm())
 onMounted(() => {
   store.loadMappers()
   loadCompanies()
+  loadBranches()
 })
 
 async function loadCompanies() {
@@ -85,6 +87,15 @@ async function loadCompanies() {
     if (result.respCode === '00') companies.value = result.respData || []
   } catch {
     companies.value = []
+  }
+}
+
+async function loadBranches() {
+  try {
+    const result = await fetchBranches()
+    if (result.respCode === '00') branches.value = result.respData || []
+  } catch {
+    branches.value = []
   }
 }
 
@@ -107,7 +118,13 @@ const fields = computed(() => [
     placeholder: t('mapper.placeholderPartnerName'),
     options: companies.value.map((c) => ({ label: `${c.companyCode} — ${c.companyName}`, value: String(c.companyCode) })),
   },
-  { name: 'branchCode', label: t('mapper.branchCode'), placeholder: t('mapper.placeholderBranchCode') },
+  {
+    name: 'branchCode',
+    label: t('mapper.branchCode'),
+    type: 'combobox',
+    placeholder: t('mapper.placeholderBranchCode'),
+    options: branches.value.map((b) => ({ label: `${b.branchName} (${b.branchNo})`, value: String(b.branchNo) })),
+  },
   { name: 'remark', label: t('mapper.remark'), type: 'textarea', placeholder: t('mapper.placeholderRemark') },
   {
     name: 'status',
