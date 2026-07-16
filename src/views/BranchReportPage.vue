@@ -130,6 +130,7 @@ function handleClear() {
 }
 
 function handleRefresh() {
+  if (!branchOptions.value.length) loadBranches()
   loadReport()
 }
 
@@ -169,13 +170,17 @@ const currencyColumns = [
   },
 ]
 
-onMounted(async () => {
+async function loadBranches() {
   try {
     const result = await fetchBranches()
     if (result.respCode === '00') branchOptions.value = result.respData || []
-  } catch {
-    // Silently fail — the select will just be empty
+  } catch (err) {
+    console.error('Failed to load branch list:', err)
   }
+}
+
+onMounted(async () => {
+  await loadBranches()
   loadReport()
 })
 </script>

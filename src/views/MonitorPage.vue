@@ -33,13 +33,18 @@
       :actions="[{ label: t('common.retry'), onClick: handleSearch }]"
     />
 
+    <div v-else-if="store.loading && !store.hasData" class="flex flex-col items-center justify-center py-16 gap-2 text-muted">
+      <UIcon name="i-lucide-loader-circle" class="size-10 animate-spin" />
+      <h3 class="text-sm font-semibold">{{ t('common.loading') }}</h3>
+    </div>
+
     <div v-else-if="!store.loading && !store.hasData" class="flex flex-col items-center justify-center py-16 gap-2 text-muted">
       <UIcon name="i-lucide-inbox" class="size-10" />
       <h3 class="text-sm font-semibold">{{ t('monitor.noData') }}</h3>
       <p class="text-xs">{{ t('monitor.noDataHint') }}</p>
     </div>
 
-    <template v-else>
+    <template v-else-if="store.hasData">
       <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           v-for="(cat, idx) in categorySummaries"
@@ -187,6 +192,7 @@ function handleClear() {
 }
 
 function handleRefresh() {
+  if (!branchList.value.length) loadBranches()
   loadMonitor()
 }
 
@@ -246,13 +252,17 @@ function handleExport() {
 
 let refreshTimer = null
 
-onMounted(async () => {
+async function loadBranches() {
   try {
     const result = await fetchBranches()
     if (result.respCode === '00') branchList.value = result.respData || []
-  } catch {
-    // Silently fail — the select will just be empty
+  } catch (err) {
+    console.error('Failed to load branch list:', err)
   }
+}
+
+onMounted(async () => {
+  await loadBranches()
   loadMonitor()
   refreshTimer = setInterval(loadMonitor, REFRESH_INTERVAL_MS)
 })

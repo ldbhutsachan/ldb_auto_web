@@ -1,86 +1,87 @@
 <template>
   <div class="flex flex-col gap-6">
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-alert-triangle" :title="error" />
-
-    <!-- Welcome Strip -->
-    <div class="relative overflow-hidden rounded-2xl p-8 md:p-9 bg-gradient-to-br from-primary-800 to-primary-950">
-      <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div class="flex-1">
-          <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-white/60 mb-2">
-            <span class="inline-block">👋</span>
-            {{ greeting }}<template v-if="authStore.userName">, {{ authStore.userName }}</template>
-          </span>
-          <h1 class="text-2xl font-extrabold text-white tracking-tight mb-1">{{ t('dashboard.title') }}</h1>
-          <p class="text-sm text-white/55">{{ t('app.tagline') }}</p>
-        </div>
-        <div class="flex items-center gap-5">
-          <div class="text-center">
-            <span class="block text-2xl font-extrabold text-white tracking-tight">{{ totalAccountMappers?.toLocaleString() }}</span>
-            <span class="text-[11px] font-medium text-white/45 uppercase tracking-wide">{{ t('dashboard.totalAccountMappers') }}</span>
-          </div>
-          <div class="w-px h-11 bg-white/10" />
-          <div class="text-center">
-            <span class="block text-2xl font-extrabold text-white tracking-tight">{{ totalUsers?.toLocaleString() }}</span>
-            <span class="text-[11px] font-medium text-white/45 uppercase tracking-wide">{{ t('dashboard.totalAccounts') }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Month/Year filter -->
     <UCard>
-      <div class="flex flex-wrap items-end gap-3">
-        <UFormField :label="t('monthlyReport.month')">
-          <USelect v-model="filterMonth" :items="monthItems" class="w-40" />
-        </UFormField>
-        <UFormField :label="t('monthlyReport.year')">
-          <USelect v-model="filterYear" :items="yearItems" class="w-32" />
-        </UFormField>
-        <UButton icon="i-lucide-search" :loading="loading" @click="applyFilter">{{ t('common.search') }}</UButton>
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div class="flex flex-wrap items-end gap-3">
+          <UFormField :label="t('monthlyReport.month')">
+            <USelect v-model="filterMonth" :items="monthItems" class="w-40" />
+          </UFormField>
+          <UFormField :label="t('monthlyReport.year')">
+            <USelect v-model="filterYear" :items="yearItems" class="w-32" />
+          </UFormField>
+          <UButton icon="i-lucide-search" :loading="loading" @click="applyFilter">{{ t('common.search') }}</UButton>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex flex-col items-center rounded-lg px-4 py-2 bg-elevated ring-1 ring-default">
+            <span class="text-lg font-extrabold tracking-tight">{{ totalAccountMappers?.toLocaleString() }}</span>
+            <span class="text-[11px] font-medium text-muted uppercase tracking-wide whitespace-nowrap">{{
+              t('dashboard.totalAccountMappers') }}</span>
+          </div>
+          <div class="flex flex-col items-center rounded-lg px-4 py-2 bg-elevated ring-1 ring-default">
+            <span class="text-lg font-extrabold tracking-tight">{{ totalUsers?.toLocaleString() }}</span>
+            <span class="text-[11px] font-medium text-muted uppercase tracking-wide whitespace-nowrap">{{
+              t('dashboard.totalAccounts') }}</span>
+          </div>
+        </div>
       </div>
     </UCard>
 
     <!-- Closing Balance -->
-    <SectionHeader icon="i-lucide-book-open-check" :title="t('dashboard.closingTotalBalance')" :subtitle="t('dashboard.closingSubtitle')" />
+    <SectionHeader icon="i-lucide-book-open-check" :title="t('dashboard.closingTotalBalance')"
+      :subtitle="t('dashboard.closingSubtitle')" />
     <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-      <StatCard :label="t('dashboard.closingTotalVvRpTxnAmount')" :value="formatCurrency(financialSummaryClosing?.totalVvRpTxnAmount || 0, 'LAK')" :loading="loading" accent-color="#10b981" icon="i-lucide-circle-dollar-sign" />
-      <StatCard :label="t('dashboard.closingTotalVvTransactionAmount')" :value="formatCurrency(financialSummaryClosing?.totalVvTransactionAmount || 0, 'USD')" :loading="loading" accent-color="#3b82f6" icon="i-lucide-badge-check" />
-      <StatCard :label="t('dashboard.closingTotalAutoDebitTxnAmount')" :value="formatCurrency(financialSummaryClosing?.totalAutoDebitTxnAmount || 0, 'THB')" :loading="loading" accent-color="#f59e0b" icon="i-lucide-archive" />
-      <StatCard :label="t('dashboard.closingTotalAutoDebitTxnCnyAmount')" :value="formatCurrency(financialSummaryClosing?.totalAutoDebitTxnCnyAmount || 0, 'CNY')" :loading="loading" accent-color="#ef4444" icon="i-lucide-boxes" />
+      <StatCard :label="t('dashboard.closingTotalVvRpTxnAmount')"
+        :value="formatCurrency(financialSummaryClosing?.totalVvRpTxnAmount || 0, 'LAK')" :loading="loading"
+        accent-color="#10b981" icon="i-lucide-circle-dollar-sign" />
+      <StatCard :label="t('dashboard.closingTotalVvTransactionAmount')"
+        :value="formatCurrency(financialSummaryClosing?.totalVvTransactionAmount || 0, 'USD')" :loading="loading"
+        accent-color="#3b82f6" icon="i-lucide-badge-check" />
+      <StatCard :label="t('dashboard.closingTotalAutoDebitTxnAmount')"
+        :value="formatCurrency(financialSummaryClosing?.totalAutoDebitTxnAmount || 0, 'THB')" :loading="loading"
+        accent-color="#f59e0b" icon="i-lucide-archive" />
+      <StatCard :label="t('dashboard.closingTotalAutoDebitTxnCnyAmount')"
+        :value="formatCurrency(financialSummaryClosing?.totalAutoDebitTxnCnyAmount || 0, 'CNY')" :loading="loading"
+        accent-color="#ef4444" icon="i-lucide-boxes" />
     </div>
 
     <!-- Financial Summary -->
-    <SectionHeader icon="i-lucide-line-chart" :title="t('dashboard.financialSummary')" :subtitle="t('dashboard.financialSummarySubtitle')" />
+    <SectionHeader icon="i-lucide-line-chart" :title="t('dashboard.financialSummary')"
+      :subtitle="t('dashboard.financialSummarySubtitle')" />
     <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-      <StatCard :label="t('dashboard.totalVvRpTxnAmount')" :value="formatCurrency(financialSummary?.totalVvRpTxnAmount || 0, 'LAK')" :loading="loading" accent-color="#10b981" icon="i-lucide-circle-dollar-sign" />
-      <StatCard :label="t('dashboard.totalVvTransactionAmount')" :value="formatCurrency(financialSummary?.totalVvTransactionAmount || 0, 'USD')" :loading="loading" accent-color="#3b82f6" icon="i-lucide-badge-check" />
-      <StatCard :label="t('dashboard.totalAutoDebitTxnAmount')" :value="formatCurrency(financialSummary?.totalAutoDebitTxnAmount || 0, 'THB')" :loading="loading" accent-color="#f59e0b" icon="i-lucide-archive" />
-      <StatCard :label="t('dashboard.totalAutoDebitTxnCnyAmount')" :value="formatCurrency(financialSummary?.totalAutoDebitTxnCnyAmount || 0, 'CNY')" :loading="loading" accent-color="#ef4444" icon="i-lucide-boxes" />
+      <StatCard :label="t('dashboard.totalVvRpTxnAmount')"
+        :value="formatCurrency(financialSummary?.totalVvRpTxnAmount || 0, 'LAK')" :loading="loading"
+        accent-color="#10b981" icon="i-lucide-circle-dollar-sign" />
+      <StatCard :label="t('dashboard.totalVvTransactionAmount')"
+        :value="formatCurrency(financialSummary?.totalVvTransactionAmount || 0, 'USD')" :loading="loading"
+        accent-color="#3b82f6" icon="i-lucide-badge-check" />
+      <StatCard :label="t('dashboard.totalAutoDebitTxnAmount')"
+        :value="formatCurrency(financialSummary?.totalAutoDebitTxnAmount || 0, 'THB')" :loading="loading"
+        accent-color="#f59e0b" icon="i-lucide-archive" />
+      <StatCard :label="t('dashboard.totalAutoDebitTxnCnyAmount')"
+        :value="formatCurrency(financialSummary?.totalAutoDebitTxnCnyAmount || 0, 'CNY')" :loading="loading"
+        accent-color="#ef4444" icon="i-lucide-boxes" />
     </div>
 
     <!-- Status Breakdowns -->
-    <SectionHeader icon="i-lucide-layout-grid" :title="t('dashboard.statusBreakdowns')" :subtitle="t('dashboard.statusBreakdownsSubtitle')" />
+    <SectionHeader icon="i-lucide-layout-grid" :title="t('dashboard.statusBreakdowns')"
+      :subtitle="t('dashboard.statusBreakdownsSubtitle')" />
     <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       <UCard v-for="(statusMap, label) in statusBreakdowns" :key="label">
         <div class="flex items-center justify-between mb-3.5">
           <span class="text-sm font-semibold text-muted">{{ statusLabels[label] || label }}</span>
-          <span class="text-lg font-extrabold tracking-tight">{{ Object.values(statusMap).reduce((a, b) => a + b, 0) }}</span>
+          <span class="text-lg font-extrabold tracking-tight">{{Object.values(statusMap).reduce((a, b) => a + b, 0)
+          }}</span>
         </div>
         <div class="flex h-1.5 rounded-full overflow-hidden bg-elevated mb-3.5">
-          <span
-            v-for="(count, status) in statusMap"
-            :key="'bar-' + status"
-            class="h-full"
-            :style="{ width: getStatusPercent(count, statusMap) + '%', background: getStatusColor(status) }"
-          />
+          <span v-for="(count, status) in statusMap" :key="'bar-' + status" class="h-full"
+            :style="{ width: getStatusPercent(count, statusMap) + '%', background: getStatusColor(status) }" />
         </div>
         <div class="flex flex-wrap gap-1.5">
-          <div
-            v-for="(count, status) in statusMap"
-            :key="status"
+          <div v-for="(count, status) in statusMap" :key="status"
             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold"
-            :style="{ background: `color-mix(in srgb, ${getStatusColor(status)} 10%, transparent)` }"
-          >
+            :style="{ background: `color-mix(in srgb, ${getStatusColor(status)} 10%, transparent)` }">
             <span class="size-1.5 rounded-full" :style="{ background: getStatusColor(status) }" />
             <span class="capitalize" :style="{ color: getStatusColor(status) }">{{ status }}</span>
             <span class="font-bold">{{ count }}</span>
