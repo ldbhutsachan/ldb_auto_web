@@ -222,9 +222,9 @@ function handleExport() {
   exportToExcel(`transactions-${dateStr}`, headers, rows)
 }
 
-function handlePettyForm() {
+async function handlePettyForm() {
   const dateStr = new Date().toISOString().slice(0, 10)
-  exportPettyForm(`petty-cash-voucher-${dateStr}`, store.transactions, {
+  await exportPettyForm(`petty-cash-voucher-${dateStr}`, store.transactions, {
     title: 'PETTY CASH VOUCHER',
     subtitle: t('transaction.title'),
     printDate: 'Print Date',

@@ -1,6 +1,9 @@
 <template>
   <div class="flex flex-col gap-5">
-    <div class="flex justify-end">
+    <div class="flex justify-end gap-2">
+      <UButton icon="i-lucide-file-spreadsheet" color="success" variant="soft" :disabled="!store.hasData" @click="handleExport">
+        {{ t('common.export') }}
+      </UButton>
       <UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" :loading="store.loading" @click="handleRefresh">
         {{ t('common.refresh') }}
       </UButton>
@@ -65,13 +68,13 @@
       <h3 class="text-sm font-bold pb-2 border-b border-default">{{ t('monitor.branchSummarySection') }}</h3>
 
       <UCard :ui="{ body: 'p-0 sm:p-0' }">
-        <UTable :data="branchSummaryRows" :columns="branchSummaryColumns" :loading="store.loading" />
+        <UTable :data="branchSummaryRows" :columns="branchSummaryColumns" />
       </UCard>
 
       <h3 class="text-sm font-bold pb-2 border-b border-default">{{ t('monitor.branchDetailSection') }}</h3>
 
       <UCard :ui="{ body: 'p-0 sm:p-0' }">
-        <UTable :data="accountDetailRows" :columns="accountDetailColumns" :loading="store.loading" />
+        <UTable :data="accountDetailRows" :columns="accountDetailColumns" />
       </UCard>
     </template>
   </div>
@@ -83,6 +86,7 @@ import { useMonitorStore } from '@/stores/monitor'
 import { fetchBranches } from '@/services/api'
 import { t } from '@/i18n'
 import { formatCurrency, formatNumber, getCurrencyColor } from '@/utils/formatters'
+import { exportMultiSheetExcel } from '@/utils/export'
 import StatCard from '@/components/StatCard.vue'
 
 const REFRESH_INTERVAL_MS = 30000
@@ -98,22 +102,17 @@ const branchItems = computed(() => [
   ...branchList.value.map((b) => ({ label: `${b.branchName} (${b.branchNo})`, value: String(b.branchNo) })),
 ])
 
-const branchNameByCode = computed(() =>
-  branchList.value.reduce((map, b) => {
-    map[String(b.branchNo)] = b.branchName
-    return map
-  }, {})
-)
-
-function branchLabel(branchCode) {
-  return branchNameByCode.value[branchCode] || branchCode || '—'
-}
-
 const accounts = computed(() => store.monitor?.accounts || [])
 const currencyTotals = computed(() => store.monitor?.currencyTotals || [])
 const branchSummaries = computed(() => store.monitor?.branchSummaries || [])
 const categorySummaries = computed(() => store.monitor?.categorySummaries || [])
 const grandTotalLak = computed(() => store.monitor?.grandTotalLak || 0)
+
+const UNASSIGNED_BRANCH_CODE = 'UNASSIGNED'
+
+function branchCodeLabel(branchCode) {
+  return branchCode === UNASSIGNED_BRANCH_CODE ? t('monitor.unassignedBranch') : branchCode
+}
 
 function ccyCell(field) {
   return ({ row }) => h('span', { class: 'font-bold text-xs font-mono', style: { color: getCurrencyColor(row.original[field]) } }, row.original[field] || '—')
@@ -133,7 +132,8 @@ const branchSummaryRows = computed(() => {
 
 const branchSummaryColumns = [
   { id: 'no', header: t('monitor.no'), cell: ({ row }) => (row.original.isTotal ? '' : `#${row.index + 1}`) },
-  { id: 'branch', header: t('monitor.branch'), cell: ({ row }) => h('span', { class: row.original.isTotal ? 'font-bold' : '' }, row.original.isTotal ? row.original.branchCode : branchLabel(row.original.branchCode)) },
+  { id: 'branch', header: t('monitor.branch'), cell: ({ row }) => h('span', { class: row.original.isTotal ? 'font-bold' : '' }, row.original.isTotal ? row.original.branchCode : branchCodeLabel(row.original.branchCode)) },
+  { id: 'branchName', header: t('monitor.branchName'), cell: ({ row }) => (row.original.isTotal ? '' : row.original.branchCode === UNASSIGNED_BRANCH_CODE ? t('monitor.unassignedBranch') : row.original.branchName || '—') },
   { id: 'LAK', header: 'LAK', cell: ({ row }) => h('div', { class: `text-right ${row.original.isTotal ? 'font-bold' : ''}` }, formatNumber(row.original.balanceByCcy?.LAK)) },
   { id: 'USD', header: 'USD', cell: ({ row }) => h('div', { class: `text-right ${row.original.isTotal ? 'font-bold' : ''}` }, formatNumber(row.original.balanceByCcy?.USD)) },
   { id: 'THB', header: 'THB', cell: ({ row }) => h('div', { class: `text-right ${row.original.isTotal ? 'font-bold' : ''}` }, formatNumber(row.original.balanceByCcy?.THB)) },
@@ -160,7 +160,8 @@ const accountDetailRows = computed(() => {
 
 const accountDetailColumns = [
   { id: 'no', header: t('monitor.no'), cell: ({ row }) => (row.original.isTotal ? '' : row.original.no || '') },
-  { id: 'branch', header: t('monitor.branch'), cell: ({ row }) => h('span', { class: row.original.isTotal ? 'font-bold' : '' }, row.original.isTotal ? row.original.branchCode : row.original.showBranch ? branchLabel(row.original.branchCode) : '') },
+  { id: 'branch', header: t('monitor.branch'), cell: ({ row }) => h('span', { class: row.original.isTotal ? 'font-bold' : '' }, row.original.isTotal ? row.original.branchCode : row.original.showBranch ? row.original.branchCode : '') },
+  { id: 'branchName', header: t('monitor.branchName'), cell: ({ row }) => (row.original.isTotal || !row.original.showBranch ? '' : row.original.branchName || '—') },
   { accessorKey: 'accountNo', header: t('monitor.accountNo'), cell: ({ row }) => (row.original.isTotal ? '' : row.original.accountNo || '—') },
   { accessorKey: 'accountName', header: t('monitor.accountName'), cell: ({ row }) => (row.original.isTotal ? '' : row.original.accountName || '—') },
   { accessorKey: 'ccy', header: t('monitor.currency'), cell: ccyCell('ccy') },
@@ -187,6 +188,60 @@ function handleClear() {
 
 function handleRefresh() {
   loadMonitor()
+}
+
+function handleExport() {
+  const categorySheet = {
+    name: t('monitor.branchSummarySection') + ' - Category',
+    headers: [t('monitor.branch'), t('monitor.branchSummaryTotal')],
+    rows: [
+      ...categorySummaries.value.map((cat) => [cat.categoryName, cat.totalLakEquivalent ?? '']),
+      [t('monitor.grandTotal'), grandTotalLak.value ?? ''],
+    ],
+  }
+
+  const currencySheet = {
+    name: 'Currency Totals',
+    headers: [t('monitor.currency'), t('monitor.endingBalance')],
+    rows: currencyTotals.value.map((ct) => [ct.ccy, ct.totalBalance ?? '']),
+  }
+
+  const branchSheet = {
+    name: t('monitor.branchSummarySection'),
+    headers: [t('monitor.no'), t('monitor.branch'), t('monitor.branchName'), 'LAK', 'USD', 'THB', 'CNY', t('monitor.branchSummaryTotal')],
+    rows: branchSummaryRows.value.map((row, idx) =>
+      row.isTotal
+        ? [
+            '', row.branchCode, '',
+            formatNumber(row.balanceByCcy?.LAK), formatNumber(row.balanceByCcy?.USD),
+            formatNumber(row.balanceByCcy?.THB), formatNumber(row.balanceByCcy?.CNY),
+            formatNumber(row.totalLakEquivalent),
+          ]
+        : [
+            idx + 1, branchCodeLabel(row.branchCode),
+            row.branchCode === UNASSIGNED_BRANCH_CODE ? t('monitor.unassignedBranch') : row.branchName || '',
+            formatNumber(row.balanceByCcy?.LAK), formatNumber(row.balanceByCcy?.USD),
+            formatNumber(row.balanceByCcy?.THB), formatNumber(row.balanceByCcy?.CNY),
+            formatNumber(row.totalLakEquivalent),
+          ]
+    ),
+  }
+
+  const accountSheet = {
+    name: t('monitor.branchDetailSection'),
+    headers: [t('monitor.no'), t('monitor.branch'), t('monitor.branchName'), t('monitor.accountNo'), t('monitor.accountName'), t('monitor.currency'), t('monitor.endingBalance')],
+    rows: accountDetailRows.value.map((row) =>
+      row.isTotal
+        ? ['', row.branchCode, '', '', '', row.ccy, formatNumber(row.balance)]
+        : [
+            row.no || '', row.showBranch ? row.branchCode : '', row.showBranch ? row.branchName || '' : '',
+            row.accountNo || '', row.accountName || '', row.ccy || '', formatNumber(row.balance),
+          ]
+    ),
+  }
+
+  const dateStr = new Date().toISOString().slice(0, 10)
+  exportMultiSheetExcel(`monitor-report-${dateStr}`, [categorySheet, currencySheet, branchSheet, accountSheet])
 }
 
 let refreshTimer = null
