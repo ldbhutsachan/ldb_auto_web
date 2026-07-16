@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -m 10 \"http://10.0.4.102:31852/auto/dev/api/v1/dash/dashboard2\" -H \"Accept: application/json\")"
+    ]
+  }
+}

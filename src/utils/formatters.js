@@ -1,4 +1,4 @@
-import { CURRENCIES } from './constants'
+import { CURRENCIES } from '@/utils/constants'
 
 /**
  * Format currency amount

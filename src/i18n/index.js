@@ -1,5 +1,5 @@
-import en from './en'
-import lo from './lo'
+import en from '@/i18n/en'
+import lo from '@/i18n/lo'
 import { STORAGE_KEYS } from '@/utils/constants'
 
 const translations = { en, lo }

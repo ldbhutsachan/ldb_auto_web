@@ -2,8 +2,8 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import router from '@/router'
 import ui from '@nuxt/ui/vue-plugin'
-import App from './App.vue'
-import './assets/css/main.css'
+import App from '@/App.vue'
+import '@/assets/css/main.css'
 
 const app = createApp(App)
 

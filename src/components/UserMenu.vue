@@ -103,7 +103,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
 import { t } from '@/i18n'
 import { BG_TONE_PRESETS } from '@/utils/constants'
-import ChangePasswordModal from './ChangePasswordModal.vue'
+import ChangePasswordModal from '@/components/ChangePasswordModal.vue'
 
 defineProps({ collapsed: Boolean })
 

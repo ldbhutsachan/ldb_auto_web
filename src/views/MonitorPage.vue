@@ -106,7 +106,7 @@ const accounts = computed(() => store.monitor?.accounts || [])
 const currencyTotals = computed(() => store.monitor?.currencyTotals || [])
 const branchSummaries = computed(() => store.monitor?.branchSummaries || [])
 const categorySummaries = computed(() => store.monitor?.categorySummaries || [])
-const grandTotalLak = computed(() => store.monitor?.grandTotalLak || 0)
+const grandTotalLak = computed(() => categorySummaries.value.reduce((sum, cat) => sum + (cat.totalLakEquivalent || 0), 0))
 
 const UNASSIGNED_BRANCH_CODE = 'UNASSIGNED'
 

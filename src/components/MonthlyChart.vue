@@ -104,7 +104,7 @@ import { t } from '@/i18n'
 import { CURRENCIES } from '@/utils/constants'
 import { formatCurrency, getCurrencyColor } from '@/utils/formatters'
 
-import TrendChart from './TrendChart.vue'
+import TrendChart from '@/components/TrendChart.vue'
 
 const props = defineProps({
   title: String,
