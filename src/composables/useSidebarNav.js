@@ -22,6 +22,7 @@ const FALLBACK_MENU = [
     children: [
       { path: '/reportTxn', label: 'ລາຍງານທຸລະກຳ', icon: 'mdi-account-plus' },
       { path: '/reportTxnSum', label: 'ລາຍງານເເຍກຕາມສາຂາ', icon: 'mdi-file-chart' },
+      { path: '/reportTxnStatistic', label: 'ລາຍງານສະຫຼຸບການຕັດເງິນ', icon: 'mdi-chart-bar' },
     ],
   },
 ]

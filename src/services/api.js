@@ -332,6 +332,45 @@ export async function fetchBranchReport(request) {
 }
 
 /**
+ * Fetch the auto-debit summary report (ລາຍງານສະຫຼຸບການຕັດເງິນ) — daily totals,
+ * success/fail breakdown, branch summary and account detail, sourced from
+ * AUTO_DEBIT_BRANCH, AUTO_DEBIT_ACCOUNT_MAPPER and AUTO_DEBIT_ACCOUNT_TXN.
+ * GET /debit/report-summary?startDate=&endDate=&branchCode=&accountNo=
+ */
+export async function fetchReportSummary({ startDate, endDate, branchCode, accountNo } = {}) {
+  const params = new URLSearchParams()
+  if (startDate) params.append('startDate', startDate)
+  if (endDate) params.append('endDate', endDate)
+  if (branchCode) params.append('branchCode', branchCode)
+  if (accountNo) params.append('accountNo', accountNo)
+  const qs = params.toString()
+  return apiRequest(`${API_ENDPOINTS.REPORT_SUMMARY}${qs ? `?${qs}` : ''}`)
+}
+
+/**
+ * Download the same report as a formatted .xlsx file (sheet1 matches the same
+ * four sections as fetchReportSummary).
+ * GET /debit/report-excel?startDate=&endDate=&branchCode=&accountNo=
+ */
+export async function downloadReportExcel({ startDate, endDate, branchCode, accountNo } = {}) {
+  const params = new URLSearchParams()
+  if (startDate) params.append('startDate', startDate)
+  if (endDate) params.append('endDate', endDate)
+  if (branchCode) params.append('branchCode', branchCode)
+  if (accountNo) params.append('accountNo', accountNo)
+  const qs = params.toString()
+
+  const token = getToken()
+  const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.REPORT_EXCEL}${qs ? `?${qs}` : ''}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to download report: HTTP ${response.status}`)
+  }
+  return response.blob()
+}
+
+/**
  * Fetch real-time account balance monitor data (accounts, currency totals,
  * per-branch summary, per-category summary, grand total), optionally filtered
  * by branch code / account number.

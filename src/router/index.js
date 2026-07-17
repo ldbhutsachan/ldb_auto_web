@@ -90,6 +90,12 @@ const routes = [
         meta: { title: 'report.branchReport' },
       },
       {
+        path: 'reportTxnStatistic',
+        name: 'ReportTxnStatistic',
+        component: () => import('@/views/ReportTxnStatisticPage.vue'),
+        meta: { title: 'reportStatistic.title' },
+      },
+      {
         path: 'monitor',
         name: 'Monitor',
         component: () => import('@/views/MonitorPage.vue'),

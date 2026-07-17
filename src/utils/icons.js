@@ -14,6 +14,9 @@ const iconMap = {
   'mdi-bank': 'i-lucide-landmark',
   'mdi-swap-horizontal': 'i-lucide-arrow-left-right',
   'mdi-chart-line': 'i-lucide-activity',
+  'mdi-chart-bar': 'i-lucide-bar-chart-3',
+  'mdi-chart-timeline': 'i-lucide-line-chart',
+  'mdi-sitemap': 'i-lucide-network',
 }
 
 const FALLBACK_ICON = 'i-lucide-circle'

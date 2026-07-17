@@ -12,6 +12,8 @@ export const API_ENDPOINTS = {
   TRANSACTIONS: '/transactions',
   TRANSACTION_SEARCH: '/auto/dev/api/v1/txn/vv-transactions',
   BRANCH_REPORT: '/auto/dev/api/v1/debit/branch-report',
+  REPORT_SUMMARY: '/auto/dev/api/v1/debit/report-summary',
+  REPORT_EXCEL: '/auto/dev/api/v1/debit/report-excel',
   // Branch management
   BRANCH_LIST: '/auto/dev/api/v1/branch/listBranch',
   BRANCH_CREATE: '/auto/dev/api/v1/branch/create',
