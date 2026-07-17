@@ -4,7 +4,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 export const API_ENDPOINTS = {
   LOGIN: '/auto/dev/api/v1/auth/login',
-  CHANGE_PASSWORD: '/auto/debit/auth/change-password',
+  CHANGE_PASSWORD: '/auto/dev/api/v1/auth/change-password',
   LOGOUT: '/auth/logout',
   PROFILE: '/auth/profile',
   DASHBOARD_SUMMARY: '/auto/dev/api/v1/dash/dashboard',
