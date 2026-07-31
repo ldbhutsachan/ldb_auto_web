@@ -25,6 +25,7 @@
           />
           <USelectMenu
             v-else-if="field.type === 'combobox'"
+            :key="`${field.name}-${(field.options || []).length}`"
             v-model="state[field.name]"
             :items="field.options || []"
             value-key="value"

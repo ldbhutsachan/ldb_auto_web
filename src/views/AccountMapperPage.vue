@@ -1,7 +1,24 @@
 <template>
   <div class="flex flex-col gap-4">
+    <UCard>
+      <div class="flex flex-wrap items-end gap-3">
+        <UFormField :label="t('mapper.branchName')">
+          <USelectMenu
+            v-if="branchesReady"
+            v-model="branchFilter"
+            :items="branchFilterItems"
+            value-key="value"
+            :placeholder="t('common.all')"
+            class="w-56"
+          />
+          <USelect v-else disabled :items="[]" :placeholder="t('common.loading')" class="w-56" />
+        </UFormField>
+        <UButton color="neutral" variant="soft" :disabled="!branchFilter" @click="branchFilter = ''">{{ t('common.clear') }}</UButton>
+      </div>
+    </UCard>
+
     <CrudTablePage
-      :rows="store.mappers"
+      :rows="filteredMappers"
       :columns="columns"
       :loading="store.loading"
       :error="store.error"
@@ -56,6 +73,21 @@ const isEditing = ref(false)
 const editingId = ref(null)
 const showStatusModal = ref(false)
 const statusTarget = ref(null)
+const branchFilter = ref('')
+const branchesReady = ref(false)
+
+const branchFilterItems = computed(() =>
+  branches.value.map((b) => ({ label: `${b.branchName} (${b.branchNo})`, value: String(b.branchNo) }))
+)
+
+const filteredMappers = computed(() => {
+  if (!branchFilter.value) return store.mappers
+  const selected = branches.value.find((b) => String(b.branchNo) === branchFilter.value)
+  const name = selected?.branchName
+  return store.mappers.filter(
+    (m) => String(m.branchCode ?? m.sectionNo ?? '') === branchFilter.value || (name && m.branchName === name)
+  )
+})
 
 function blankForm() {
   const today = new Date().toISOString().split('T')[0]
@@ -67,7 +99,7 @@ function blankForm() {
     remark: '',
     partnerName: '',
     branchCode: '',
-    status: 0,
+    status: 'open',
     userDate: today,
     userBy: authStore.user?.username || '',
   }
@@ -96,6 +128,8 @@ async function loadBranches() {
     if (result.respCode === '00') branches.value = result.respData || []
   } catch {
     branches.value = []
+  } finally {
+    branchesReady.value = true
   }
 }
 
@@ -131,8 +165,8 @@ const fields = computed(() => [
     label: t('mapper.status'),
     type: 'select',
     options: [
-      { label: t('mapper.pending'), value: 1 },
-      { label: t('mapper.activeStatus'), value: 0 },
+      { label: t('mapper.activeStatus'), value: 'open' },
+      { label: t('mapper.pending'), value: 'close' },
     ],
   },
   { name: 'userDate', label: t('mapper.userDate'), type: 'date' },
@@ -141,8 +175,8 @@ const fields = computed(() => [
 const statusMessage = computed(() => {
   if (!statusTarget.value) return ''
   const name = statusTarget.value.fromAcctName || statusTarget.value.accountName
-  const from = Number(statusTarget.value.status) === 0 ? t('mapper.activeStatus') : t('mapper.pending')
-  const to = Number(statusTarget.value.status) === 0 ? t('mapper.pending') : t('mapper.activeStatus')
+  const from = statusTarget.value.status === 'open' ? t('mapper.activeStatus') : t('mapper.pending')
+  const to = statusTarget.value.status === 'open' ? t('mapper.pending') : t('mapper.activeStatus')
   return `${name} — ${from} → ${to}`
 })
 
@@ -164,7 +198,7 @@ function openEditModal(item) {
     remark: item.remark || '',
     partnerName: item.partnerName || item.companyId || '',
     branchCode: item.branchCode || item.sectionNo || '',
-    status: item.status != null ? Number(item.status) : 0,
+    status: item.status || 'open',
     userDate: item.userDate ? item.userDate.split('T')[0] : '',
     userBy: item.userBy || item.userId || '',
   }
@@ -202,7 +236,7 @@ function confirmStatusToggle(item) {
 
 async function handleStatusToggle() {
   if (!statusTarget.value) return
-  const newStatus = Number(statusTarget.value.status) === 0 ? 1 : 0
+  const newStatus = statusTarget.value.status === 'open' ? 'close' : 'open'
   const id = statusTarget.value.keyId || statusTarget.value.id
   const success = await store.updateMapperStatus(id, newStatus)
   if (success) {
@@ -216,7 +250,9 @@ const columns = [
   { accessorKey: 'fromAcctNo', header: t('mapper.accountNo'), cell: ({ row }) => row.original.fromAcctNo || row.original.accountNo || '—' },
   { accessorKey: 'fromAcctName', header: t('mapper.accountName'), cell: ({ row }) => row.original.fromAcctName || row.original.accountName || '—' },
   { accessorKey: 'fromAcctCcy', header: t('mapper.accountCcy'), cell: ({ row }) => row.original.fromAcctCcy || row.original.accountCcy || '—' },
-  { accessorKey: 'partnerName', header: t('mapper.partnerName'), cell: ({ row }) => row.original.partnerName || row.original.companyName || '—' },
+  { accessorKey: 'partnerName', header: t('mapper.partnerCode'), cell: ({ row }) => row.original.partnerName || row.original.partnerName || row.original.partnerName || '—' },
+  { accessorKey: 'partnerNames', header: t('mapper.partnerName'), cell: ({ row }) => row.original.partnerNames || row.original.partnerNames || row.original.companyName || '—' },
+  { accessorKey: 'branchName', header: t('mapper.branchName'), cell: ({ row }) => row.original.branchName || '—' },
   {
     accessorKey: 'status',
     header: t('mapper.status'),
@@ -226,10 +262,10 @@ const columns = [
         {
           class: [
             'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold',
-            Number(row.original.status) === 0 ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning',
+            row.original.status === 'open' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning',
           ],
         },
-        Number(row.original.status) === 0 ? t('mapper.activeStatus') : t('mapper.pending')
+        row.original.status === 'open' ? t('mapper.activeStatus') : t('mapper.pending')
       ),
   },
   {
@@ -245,8 +281,8 @@ const columns = [
           onClick: () => openEditModal(row.original),
         }),
         h(UButton, {
-          icon: Number(row.original.status) === 0 ? 'i-lucide-ban' : 'i-lucide-check',
-          color: Number(row.original.status) === 0 ? 'error' : 'success',
+          icon: row.original.status === 'open' ? 'i-lucide-ban' : 'i-lucide-check',
+          color: row.original.status === 'open' ? 'error' : 'success',
           variant: 'ghost',
           size: 'sm',
           onClick: () => confirmStatusToggle(row.original),
